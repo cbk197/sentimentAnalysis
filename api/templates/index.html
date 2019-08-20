@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>test model</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body   background="http://www.spaldwickschool.org.uk/wp-content/uploads/2018/05/watercolor3.jpg">
+
+<div ng-app="myApp" ng-controller="myCtrl" class="container" >
+    <br> 
+    <br>
+    <br> 
+    <form>
+        <div class="form-group">
+          <label for="comment">Enter Comment:</label>
+          <textarea class="form-control" ng-model="comment" rows="5"  id="comment"></textarea>
+        </div>
+    </form>
+
+    <button type="button" class="btn btn-default" ng-click="myFunction()">Get Result</button>
+    <br>
+    <br>
+    <label for="comment">Result : </label> 
+    <p> {{'{{result}}'}} </p>
+    <br>
+    <br>
+    <br> 
+
+    <form>
+        <div class="form-group">
+            <label for="comment">Text Random:</label><br>
+            <button type="button" class="btn btn-default" ng-click="getText()">Get text</button><br><br>
+            <textarea class="form-control"  ng-model="textrand" rows="5"  id="comment">{{'{{text1}}'}}</textarea>
+
+            <label for="comment">select : </label> <br>
+            <label class="checkbox-inline"><input type="checkbox" ng-model = "pos" value="">Tích Cực</label>
+            <label class="checkbox-inline"><input type="checkbox" ng-model = "nag" value="">Tiêu Cực</label><br>
+            <button type="button" class="btn btn-default" ng-click="printResult()">Result</button><br>
+            <p>{{'{{kq0}}'}}</p>
+
+        </div>
+
+    </form>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    </div>
+    <script>
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function($scope,$http) {
+        var label = null;
+        $scope.myFunction = function() {
+            var data1 = {'comment': $scope.comment};
+            $scope.result = "";
+            $http({
+                method : "POST",
+                url : "postmt",
+                data :  $scope.comment,
+                headers: {'Content-Type' : 'application/json; charset=UTF-8'}
+            }).then(function mySuccess(response) {
+                $scope.result = response.data.result;
+            }, function myError(response) {
+                $scope.result = response.statusText;
+            });
+        }
+
+        $scope.getText = function() {
+            var data1 = {'comment': $scope.comment}
+            $http({
+                method : "GET",
+                url : "getrantext",
+            }).then(function mySuccess(response) {
+                $scope.textrand = response.data.text;
+                $scope.kq0  = "";
+                label = response.data.label;
+                console.log(label)
+            }, function myError(response) {
+                $scope.text1 = response.statusText;
+            });
+        }
+        $scope.printResult = function() {
+            if ( ($scope.pos == false && $scope.nag == false )|| ($scope.pos == true && $scope.nag == true ) ){
+                alert("please check one box");
+            }else{
+                if (label == 0) {
+                    if ($scope.pos == true) {
+                        $scope.kq0  = "You true";
+                        $scope.pos = false;
+                        $scope.nag = false;
+
+                    }else{
+                        $scope.kq0  = "You false";
+                        $scope.pos = false;
+                        $scope.nag = false;
+                    };
+                };
+                if (label == 1) {
+                    if ($scope.pos == true) {
+                        $scope.kq0  = "You false";
+                        $scope.pos = false;
+                        $scope.nag = false;
+                    }else{
+                        $scope.kq0  = "You true";
+                        $scope.pos = false;
+                        $scope.nag = false;
+                    }
+                };
+            }
+            
+        }
+
+    });
+    </script> 
+</div>
+</body>
+</html>
